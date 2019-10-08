@@ -14,4 +14,6 @@
         android:layout_height="match_parent"
         android:id="@+id/list"
         android:textAlignment="center"/>
+
+
 </RelativeLayout>
