@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     Title title;
     int n;
-    TextView TV;
-    SharedPreferences sharedPreferences;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,9 +60,10 @@ public class MainActivity extends AppCompatActivity {
                         String head = tv.getText().toString();
                         title = new Title();
                         title.setTitle(head);
-                        database.child("Note No "+(n+1)).setValue(title);
-                        sharedPreferences.edit().putInt("Number", n+1).apply();
+                        database.child("Note No "+(++n)).setValue(title);
                         Toast.makeText(MainActivity.this, head+" Saved", Toast.LENGTH_SHORT).show();
+
+
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -72,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
-                }).show();
+                })
+                .show();
 
 //        Toast.makeText(getApplicationContext(), tv.getText().toString(), Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.list);
         database = FirebaseDatabase.getInstance().getReference().child("Notes");
 
-        sharedPreferences = this.getSharedPreferences("myPreferences", Context.MODE_PRIVATE);
-        n = sharedPreferences.getInt("Number", 0);
+        //sharedPreferences = this.getSharedPreferences("myPreferences", Context.MODE_PRIVATE);
+
 
         /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -106,21 +106,30 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(arrayAdapter);
 
-        DatabaseReference retrieve = FirebaseDatabase.getInstance().getReference().child("Notes");
-        retrieve.addValueEventListener(new ValueEventListener() {
+
+        database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                arrayList.clear();
-                for(int i=1; i<=n; i++){
-                    try {
-                        String data = dataSnapshot.child("Note No " + i).child("title").getValue().toString();
-                        arrayList.add(data);
-                    }
-                    catch (Exception E){
+                n = (int)(dataSnapshot.getChildrenCount());
+                if(n!=0){
 
+                    arrayList.clear();
+                    for(int i=1; i<=n; i++){
+                        try {
+                            String data = dataSnapshot.child("Note No " + i).child("title").getValue().toString();
+                            arrayList.add(data);
+                        }
+                        catch (Exception E){
+
+                        }
                     }
+                    arrayAdapter.notifyDataSetChanged();
+
                 }
-                arrayAdapter.notifyDataSetChanged();
+                else{
+                    arrayList.add("No Notes to display");
+                }
+
             }
 
             @Override
@@ -128,9 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        for(int i=0; i<=n; i++){
 
-        }
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -140,8 +147,5 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
             }
         });
-
     }
-
-
 }
