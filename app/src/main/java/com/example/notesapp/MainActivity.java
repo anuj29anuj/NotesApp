@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                         title = new Title();
                         title.setTitle(head);
                         database.child("Note No "+(++n)).setValue(title);
-                        Toast.makeText(MainActivity.this, head+" Saved", Toast.LENGTH_SHORT).show();
+                       //Toast.makeText(MainActivity.this, head+" Saved", Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -91,16 +91,17 @@ public class MainActivity extends AppCompatActivity {
         //sharedPreferences = this.getSharedPreferences("myPreferences", Context.MODE_PRIVATE);
 
 
-        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                database.child("Note No "+i).removeValue();
                 arrayList.remove(i);
                 arrayAdapter.notifyDataSetChanged();
                 //listView.requestLayout();                                                                 //Remove from Database
                 //adapterView.refreshDrawableState();
                 return true;
             }
-        });*/
+        });
 
         arrayList = new ArrayList<>();
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 n = (int)(dataSnapshot.getChildrenCount());
+                Toast.makeText(MainActivity.this, n+" ", Toast.LENGTH_SHORT).show();
                 if(n!=0){
 
                     arrayList.clear();
